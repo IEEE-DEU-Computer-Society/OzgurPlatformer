@@ -2,16 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.TextCore.Text;
 public class PlayerControl : MonoBehaviour
 {   
-    //TODO edge detection and bugfix
-    //TODO double jump, wall jump
-    //known bugs: sticking to the wall
-    
+    //known bugs:
+    //wall climbing - coyote time for double jump
+
     //includes:
     //horizontal movement and jump
+    //double jump, wall jump
     //coyote time, variable jump and jump buffering
+    
+    //TODO: wall stick, bug fix
 
     //basic variables
     public Rigidbody2D rb;
@@ -30,22 +33,35 @@ public class PlayerControl : MonoBehaviour
     //jump buffer variables
     public float jumpBufferTimer;
     public float jumpBufferLimit = 0.1f;
+    
+    //double jump variable
+    public int extraJumpCounter = 1;
+    
+    //wall jump variables
+    public bool isWalled;
+    public GameObject face;
+    public GameObject face2;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         feet = GameObject.Find("CharacterFeet");
+        face = GameObject.Find("CharacterFace");
+        face2 = GameObject.Find("CharacterFace2");
     }
     void Update()
     {
         //horizontal move
         moveInput = Input.GetAxisRaw("Horizontal");
-        if (moveInput != 0)
+        if (isGrounded || !isWalled)
         {
-            rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
-        }
-        else
-        {
-            rb.velocity = new Vector2(0, rb.velocity.y);
+            if (moveInput != 0)
+            {
+                rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
+            }
+            else
+            {
+                rb.velocity = new Vector2(0, rb.velocity.y);
+            }
         }
         //horizontal move
         
@@ -54,10 +70,17 @@ public class PlayerControl : MonoBehaviour
             LayerMask.GetMask("Ground"));
         //
         
+        //
+        isWalled = Physics2D.OverlapBox(face.transform.position, face.transform.localScale, 0,
+            LayerMask.GetMask("Wall")) || Physics2D.OverlapBox(face2.transform.position, face2.transform.localScale, 0,
+            LayerMask.GetMask("Wall"));
+        //
+
         //coyote time
-        if (isGrounded)
+        if (isGrounded || isWalled)
         {
             coyoteTimer = coyoteLimit;
+            extraJumpCounter = 1;
         }
         else
         {
@@ -84,6 +107,14 @@ public class PlayerControl : MonoBehaviour
         }
         //jump
         
+        //double jump
+        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded && extraJumpCounter > 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed*1.25f);
+            extraJumpCounter--;
+        }
+        //double jump
+        
         //variable jump height
         if (Input.GetKeyUp(KeyCode.Space) && rb.velocity.y >0)
         {
@@ -92,5 +123,12 @@ public class PlayerControl : MonoBehaviour
             jumpBufferTimer = 0f;
         }
         //variable jump height
+        
+        //wall jump
+        if (coyoteTimer > 0f && jumpBufferTimer > 0f && isWalled)
+        {
+            rb.velocity = new Vector2(moveInput * jumpSpeed, jumpSpeed);
+        }
+        //wall jump
     }
 }
