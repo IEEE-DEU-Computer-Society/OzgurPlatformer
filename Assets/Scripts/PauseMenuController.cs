@@ -21,7 +21,6 @@ public class PauseMenuController : MonoBehaviour
         {
             if (!isGamePaused)
             {
-                Debug.Log("durdu");
                 PauseMenu.SetActive(true);
                 Time.timeScale = 0f;
                 isGamePaused = true;
@@ -29,7 +28,6 @@ public class PauseMenuController : MonoBehaviour
 
             else
             {
-                Debug.Log("dewam");
                 Continue();
             }
         }
