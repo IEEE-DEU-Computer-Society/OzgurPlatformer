@@ -1,9 +1,9 @@
 # OzgurPlatformer
 Basic platformer game for learning and practicing
 
-Features:
-Main menu, pause menu
-Horizontal movement and jump
-Coyote time, jump buffering, variable jump height
-Double jump, wall jump
+Features:<br />
+Main menu, pause menu<br />
+Horizontal movement and jump<br />
+Coyote time, jump buffering, variable jump height<br />
+Double jump, wall jump<br />
 Camera follow
