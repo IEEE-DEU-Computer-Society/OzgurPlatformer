@@ -16,6 +16,8 @@ public class CameraFollow : MonoBehaviour
         camTransform = GetComponent<Transform>();
     }
     
+    //commit örnek
+    
     void Update()
     {
         characterPos = new Vector3(character.transform.position.x,character.transform.position.y, -10);
