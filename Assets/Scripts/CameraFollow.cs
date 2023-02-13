@@ -10,13 +10,6 @@ public class CameraFollow : MonoBehaviour
     public Transform camTransform;
     public GameObject character;
     public float cameraDelay = 5f;
-    void Start()
-    {
-        character = GameObject.Find("Character");
-        camTransform = GetComponent<Transform>();
-    }
-    
-    //commit örnek
     
     void Update()
     {
