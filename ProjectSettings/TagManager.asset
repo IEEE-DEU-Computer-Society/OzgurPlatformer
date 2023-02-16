@@ -3,18 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Wall
+  - Ground
+  - Enemy
+  - Ceiling
+  - FallGround
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
-  - Wall
-  - Ceiling
-  - Checkpoint
-  - FallGround
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -41,12 +46,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
+  - name: Layer1
     uniqueID: 244454277
     locked: 0
-  - name: Layer1
-    uniqueID: 3452035369
-    locked: 0
   - name: Layer2
-    uniqueID: 543606783
+    uniqueID: 2706665961
     locked: 0
