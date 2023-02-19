@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Ceiling
   - FallGround
+  - PatrolPoint
   layers:
   - Default
   - TransparentFX
