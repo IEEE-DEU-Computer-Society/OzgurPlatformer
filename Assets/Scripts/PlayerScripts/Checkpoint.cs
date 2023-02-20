@@ -37,13 +37,13 @@ public class Checkpoint : MonoBehaviour
     }
 
     //checkpoint
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D col)
     {
-        if (other.CompareTag("Respawn"))
+        if (col.CompareTag("Respawn"))
         {
-            if (checkpointList.IndexOf(other.gameObject) > checkpointList.IndexOf(lastCheckpoint))
+            if (checkpointList.IndexOf(col.gameObject) > checkpointList.IndexOf(lastCheckpoint))
             {
-                lastCheckpoint = other.gameObject;
+                lastCheckpoint = col.gameObject;
             }
         }
     }

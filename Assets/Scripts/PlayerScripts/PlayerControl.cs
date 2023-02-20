@@ -11,12 +11,8 @@ public class PlayerControl : MonoBehaviour
     public Rigidbody2D rb;
     
     //jump selection - SELECT ONE AND ONLY - make it true to select
-    public bool variableJumpHeight = true;
-    public bool longJump;
-    
-    //wall jump selection - SELECT ONE AND ONLY - make it true to select
-    public bool wallJumpV1;
-    public bool wallJumpV2 = true;
+    public bool variableJumpHeightSelectOne = true;
+    public bool longJumpSelectOne;
 
     //movement variables
     public float speed = 10f;
@@ -44,12 +40,16 @@ public class PlayerControl : MonoBehaviour
     
     //wall jump variable
     public float jumpDirection;
+    public float wallJumpTimer = 0.2f;
 
     void Update()
     {
-        moveInput = Input.GetAxisRaw("Horizontal");
+        //idle and moving states
         state.isIdle = state.isGrounded && moveInput == 0;
-        state.isMoving = moveInput != 0;
+        state.isMoving = moveInput != 0 && !state.isSticked;
+        
+        //input
+        moveInput = Input.GetAxisRaw("Horizontal");
 
         //horizontal move
         if (!state.isGrappled && !state.isWallJumping)
@@ -82,8 +82,8 @@ public class PlayerControl : MonoBehaviour
         //ground check
         
         //wall check
-        wallCheckRight = Physics2D.Raycast(right.transform.position, Vector2.right, 0.1f);
-        wallCheckLeft = Physics2D.Raycast(left.transform.position, Vector2.left, 0.1f);
+        wallCheckRight = Physics2D.Raycast(right.transform.position, Vector2.right, 0.05f);
+        wallCheckLeft = Physics2D.Raycast(left.transform.position, Vector2.left, 0.05f);
 
         if (wallCheckRight.collider != null)
         {
@@ -114,14 +114,13 @@ public class PlayerControl : MonoBehaviour
             
             extraJumpCounter = 1;
             state.isJumping = false;
-            state.isWallJumping = false;
         }
         
         else
         {
             coyoteTimer -= Time.deltaTime;
         }
-        //coyote time  +
+        //coyote time +
 
         //jump and wall jump buffer
         if (Input.GetKeyDown(KeyCode.Space))
@@ -133,18 +132,18 @@ public class PlayerControl : MonoBehaviour
         {
             jumpBufferTimer -= Time.deltaTime;
         }
-        //jump buffer
+        //jump and wall jump buffer
 
         //jump
-        if (coyoteTimer > 0 && jumpBufferTimer > 0f && !state.isWallJumping)
+        if (coyoteTimer > 0 && jumpBufferTimer > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
             state.isJumping = true;
         }
-        //jump and wall jump
+        //jump
         
         //long jump
-        if (longJump)
+        if (longJumpSelectOne)
         {
             if (state.isGrounded)
             {
@@ -170,7 +169,7 @@ public class PlayerControl : MonoBehaviour
         //long jump
 
         //variable jump height
-        if (variableJumpHeight)
+        if (variableJumpHeightSelectOne && !state.isWallJumping)
         {
             if (Input.GetKeyUp(KeyCode.Space) && rb.velocity.y > 0)
             {
@@ -182,12 +181,12 @@ public class PlayerControl : MonoBehaviour
         //variable jump height
         
         //double jump for long jump
-        if (longJump)
+        if (longJumpSelectOne)
         {
             if (Input.GetKeyDown(KeyCode.Space) && !state.isGrounded && extraJumpCounter > 0)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpeed*1.25f);
-                if (coyoteTimer < 0)
+                if (coyoteTimer < 0 && !state.isSticked)
                 {
                     extraJumpCounter--;
                 }
@@ -207,12 +206,12 @@ public class PlayerControl : MonoBehaviour
         //double jump for long jump
 
         //double jump for variable jump height
-        if (variableJumpHeight)
+        if (variableJumpHeightSelectOne)
         {
             if (Input.GetKeyDown(KeyCode.Space) && !state.isGrounded && extraJumpCounter > 0)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpeed*1.25f);
-                if (coyoteTimer < 0)
+                if (coyoteTimer < 0 && !state.isSticked)
                 {
                     extraJumpCounter--;
                 }
@@ -232,31 +231,54 @@ public class PlayerControl : MonoBehaviour
         }
 
         if (!state.isSticked && state.isWalled && !state.isGrounded)
-        {
+        { 
             rb.velocity = new Vector2(0, 0);
             rb.gravityScale = 0f;
         }
 
         state.isSticked = state.isWalled && !state.isGrounded;
-
         if (state.isSticked)
         {
-            state.isWallJumping = true;
+            wallJumpTimer = 0.2f;
+            extraJumpCounter = 1;
             state.isJumping = false;
 
-            if (moveInput == jumpDirection * -1 && jumpBufferTimer > 0f)
+            if (Input.GetKeyDown(KeyCode.S))
             {
+                rb.velocity = new Vector2(jumpDirection * jumpSpeed, 0f);
                 rb.gravityScale = 4f;
-                rb.velocity = new Vector2(jumpDirection * jumpSpeed * 0.3f, jumpSpeed);
-                state.isWallJumping = false;
+            }
+
+            if (moveInput == -1 * jumpDirection && jumpBufferTimer > 0f)
+            {
+                state.isWallJumping = true;
+                rb.velocity = new Vector2(jumpDirection * jumpSpeed/2f, jumpSpeed);
+                rb.gravityScale = -1f;
+                state.isSameWallJumping = true;
+                
+                Invoke(nameof(SameWallJumpFalser), 0.2f);
             }
             
             else if (jumpBufferTimer > 0f)
             {
+                state.isWallJumping = true;
                 rb.velocity = new Vector2(jumpDirection * jumpSpeed, jumpSpeed);
                 rb.gravityScale = 4f;
             }
         }
+
+        wallJumpTimer -= Time.deltaTime;
+        if (!Input.GetKey(KeyCode.Space) && wallJumpTimer < 0f && state.isWallJumping)
+        {
+            state.isWallJumping = false;
+        }
         //wall jump
+    }
+
+    public void SameWallJumpFalser()
+    {
+        state.isWallJumping = false;
+        state.isSameWallJumping = false;
+        rb.gravityScale = 4f;
     }
 }

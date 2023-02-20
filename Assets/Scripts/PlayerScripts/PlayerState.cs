@@ -20,6 +20,7 @@ public class PlayerState : MonoBehaviour
     public bool isRightWalled;
     public bool isLeftWalled;
     public bool isSticked;
+    public bool isSameWallJumping;
     public bool isWallJumping;
     
     //hook states
