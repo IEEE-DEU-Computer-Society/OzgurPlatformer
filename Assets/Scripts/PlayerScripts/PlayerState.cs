@@ -7,6 +7,8 @@ public class PlayerState : MonoBehaviour
     public GrappleHook grappleHook;
     
     //movement states
+    public bool isFacingRight = true;
+    public bool isFacingLeft;
     public bool isMoving;
     public bool isIdle;
     public bool isJumping;

@@ -15,8 +15,8 @@ public class PlayerControl : MonoBehaviour
     public bool longJumpSelectOne;
 
     //movement variables
-    public float speed = 10f;
-    public float jumpSpeed = 15f;
+    public float speed = 15f;
+    public float jumpSpeed = 17f;
     private float moveInput;
     
     //check variables
@@ -44,12 +44,14 @@ public class PlayerControl : MonoBehaviour
 
     void Update()
     {
+        //input
+        moveInput = Input.GetAxisRaw("Horizontal");
+        //input
+        
         //idle and moving states
         state.isIdle = state.isGrounded && moveInput == 0;
         state.isMoving = moveInput != 0 && !state.isSticked;
-        
-        //input
-        moveInput = Input.GetAxisRaw("Horizontal");
+        //idle and moving states
 
         //horizontal move
         if (!state.isGrappled && !state.isWallJumping)
@@ -112,6 +114,7 @@ public class PlayerControl : MonoBehaviour
         {
             coyoteTimer = coyoteLimit;
             
+            rb.gravityScale = 5f;
             extraJumpCounter = 1;
             state.isJumping = false;
         }
@@ -151,7 +154,7 @@ public class PlayerControl : MonoBehaviour
                 state.isLongJumping = false;
             }
 
-            if (Math.Abs(feet.transform.position.y - (longJumpCheck.y + 2.5f)) < 0.25f && rb.velocity.y > 0f)
+            if (Math.Abs(feet.transform.position.y - longJumpCheck.y - 2.5f) < 0.25f && rb.velocity.y > 0f)
             {
                 if (!Input.GetKey(KeyCode.Space))
                 {
@@ -218,7 +221,7 @@ public class PlayerControl : MonoBehaviour
             }
         }
         //double jump for variable jump height
-
+        
         //wall jump
         if (state.isLeftWalled)
         {
@@ -246,7 +249,7 @@ public class PlayerControl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.S))
             {
                 rb.velocity = new Vector2(jumpDirection * jumpSpeed, 0f);
-                rb.gravityScale = 4f;
+                rb.gravityScale = 5f;
             }
 
             if (moveInput == -1 * jumpDirection && jumpBufferTimer > 0f)
@@ -256,14 +259,14 @@ public class PlayerControl : MonoBehaviour
                 rb.gravityScale = -1f;
                 state.isSameWallJumping = true;
                 
-                Invoke(nameof(SameWallJumpFalser), 0.2f);
+                Invoke(nameof(SameWallJumpFalser), 0.1f);
             }
             
             else if (jumpBufferTimer > 0f)
             {
                 state.isWallJumping = true;
                 rb.velocity = new Vector2(jumpDirection * jumpSpeed, jumpSpeed);
-                rb.gravityScale = 4f;
+                rb.gravityScale = 5f;
             }
         }
 
@@ -279,6 +282,6 @@ public class PlayerControl : MonoBehaviour
     {
         state.isWallJumping = false;
         state.isSameWallJumping = false;
-        rb.gravityScale = 4f;
+        rb.gravityScale = 5f;
     }
 }

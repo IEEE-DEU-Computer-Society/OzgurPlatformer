@@ -8,10 +8,10 @@ public class GrappleHook : MonoBehaviour
     public GameObject top;
     public LineRenderer lineRenderer;
     public DistanceJoint2D distanceJoint;
-
     public Rigidbody2D rb;
 
     //variables
+    public float swingSpeed = 20f;
     public bool isCeiling;
     public Vector2 mousePosition;
     public RaycastHit2D ceilingCheck;
@@ -64,16 +64,21 @@ public class GrappleHook : MonoBehaviour
 
             if (state.isPulled)
             {
-                //rb.gravityScale = 0f;                                           //aot
+                rb.gravityScale = 0f;
                 distanceJoint.distance -= 20f * Time.deltaTime;
             }
 
             if (Input.GetMouseButtonUp(1))
             {
-                //rb.gravityScale = 4f;                                           //aot
+                rb.gravityScale = 5f;
                 state.isPulled = false;
                 distanceJoint.autoConfigureDistance = true;
             }
+        }
+
+        if (state.isGrappled && rb.velocity.magnitude > 15f)
+        {
+            rb.velocity = Vector2.ClampMagnitude(rb.velocity, swingSpeed);
         }
     }
 }
